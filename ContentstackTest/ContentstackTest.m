@@ -179,20 +179,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
 #pragma mark -
 #pragma mark Test Case - Additional Checking
 
--(void)checkEnvironment:(Entry *)obj {
-    
-    if ([obj.publishDetails firstObject]) {
-        NSString *objeEnvUid = [[obj.publishDetails firstObject] objectForKey:@"environment"];
-        NSString *envUID = @"blt54cec58f9752fecd";
-        
-        if ([objeEnvUid isEqualToString:envUID]) {
-            XCTAssert(YES, @"Pass");
-        } else {
-            XCTFail(@"environment not matched.");
-        }
-        
-    }
-}
 
 -(void)checkLanguageStatus:(Entry *)obj {
     
@@ -282,7 +268,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
         }else {
             
             [self checkLanguageStatus:entry];
-            [self checkEnvironment:entry];
             
             NSString *markdownString = [entry HTMLStringForMarkdownKey:@"markdown"];
             if (markdownString) {
@@ -317,7 +302,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             XCTFail(@"~ ERR: %@, Message = %@", error.userInfo, error.description);
         }else {
             [self checkLanguageStatus:entry];
-            [self checkEnvironment:entry];
             
             NSLog(@"result %lu", (unsigned long)entry.language);
             
@@ -444,7 +428,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             XCTFail(@"~ ERR: %@, Message = %@", error.userInfo, error.description);
         }else {
             [self checkLanguageStatus:entry];
-            [self checkEnvironment:entry];
             Group *grp = [entry groupForKey:@"singlegroup"];
             XCTAssertNotNil([grp objectForKey:@"title"],@"Group object not configured");
             
@@ -502,7 +485,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
         }else {
             
             [self checkLanguageStatus:entry];
-            [self checkEnvironment:entry];
             
             if ([entry.uid isEqualToString:uid]) {
                 XCTAssert(YES, @"Pass");
@@ -571,7 +553,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
         }else {
             
             [self checkLanguageStatus:entry];
-            [self checkEnvironment:entry];
             
             [ includeAllFieldsExceptFields enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 if ([[entry.properties allKeys] containsObject:obj]) {
@@ -608,7 +589,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
         }else {
             
             [self checkLanguageStatus:entry];
-            [self checkEnvironment:entry];
             
             if ([entry objectForKey:@"category"]) {
                 
@@ -658,7 +638,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
         }else {
             
             [self checkLanguageStatus:entry];
-            [self checkEnvironment:entry];
             
             if ([entry objectForKey:@"category"]) {
                 
@@ -699,7 +678,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             [self testProductCount:[result getResult]];
             [[result getResult] enumerateObjectsUsingBlock:^(Entry *obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 [self checkLanguageStatus:obj];
-                [self checkEnvironment:obj];
             }];
             XCTAssertTrue([result getResult].count > 0, @"Product count should not be 0");
         }
@@ -751,7 +729,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
                 if ([obj isKindOfClass:[Entry class]]) {
                     
                     [self checkLanguageStatus:obj];
-                    [self checkEnvironment:obj];
                     
                     XCTAssertTrue([[obj objectForKey:@"title"] isEqualToString:objectValue], @"Value must be of specified key");
                 }
@@ -784,7 +761,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
                 if ([obj isKindOfClass:[Entry class]]) {
                     
                     [self checkLanguageStatus:obj];
-                    [self checkEnvironment:obj];
                     
                     XCTAssertFalse([[obj objectForKey:@"title"] isEqualToString:@"Women"], @"Value exist for specified key");
                 }
@@ -816,7 +792,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
                 if ([obj isKindOfClass:[Entry class]]) {
                     
                     [self checkLanguageStatus:obj];
-                    [self checkEnvironment:obj];
                     
                     XCTAssertTrue([[obj objectForKey:@"price"] integerValue] >= 99, @"Value exist for price less than the given price");
                 }
@@ -848,7 +823,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
                 if ([obj isKindOfClass:[Entry class]]) {
                     
                     [self checkLanguageStatus:obj];
-                    [self checkEnvironment:obj];
                     
                     XCTAssertTrue([[obj objectForKey:@"price"] integerValue] <= 99, @"Value exist for price greater than the given price");
                 }
@@ -880,7 +854,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
                 if ([obj isKindOfClass:[Entry class]]) {
                     
                     [self checkLanguageStatus:obj];
-                    [self checkEnvironment:obj];
                     
                     XCTAssertTrue([[obj objectForKey:@"price"] integerValue] > 99, @"Value exist for price less than or equal to the given price");
                 }
@@ -912,7 +885,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
                 if ([obj isKindOfClass:[Entry class]]) {
                     
                     [self checkLanguageStatus:obj];
-                    [self checkEnvironment:obj];
                     
                     XCTAssertTrue([[obj objectForKey:@"price"] integerValue] < 99, @"Value exist for price greater than or equal to the given price");
                 }
@@ -946,7 +918,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
                 if ([obj isKindOfClass:[Entry class]]) {
                     
                     [self checkLanguageStatus:obj];
-                    [self checkEnvironment:obj];
                     
                     XCTAssertTrue([keys containsObject:obj[@"title"]], @"Value not exist for specified keys");
                 }
@@ -979,7 +950,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
                 if ([obj isKindOfClass:[Entry class]]) {
                     
                     [self checkLanguageStatus:obj];
-                    [self checkEnvironment:obj];
                     
                     XCTAssertFalse([keys containsObject:obj[@"title"]], @"Value exist for specified keys");
                 }
@@ -1018,7 +988,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             for (Entry *entry in [result getResult]) {
                 
                 [self checkLanguageStatus:entry];
-                [self checkEnvironment:entry];
                 
                 XCTAssertTrue((([[entry objectForKey:@"price"] intValue] >= 99) || [[entry objectForKey:@"in_stock"] boolValue]), @"condition not specified for  query");
             }
@@ -1055,7 +1024,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             
             for (Entry *entry in [result getResult]) {
                 [self checkLanguageStatus:entry];
-                [self checkEnvironment:entry];
                 
                 XCTAssertTrue((([[entry objectForKey:@"price"] intValue] >= 99) && [[entry objectForKey:@"in_stock"] boolValue]), @"condition not specified for  query");
             }
@@ -1087,7 +1055,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             
             for (Entry *entry in [result getResult]) {
                 [self checkLanguageStatus:entry];
-                [self checkEnvironment:entry];
                 if (entry.createdAt) {
                     if (i == 0) {
                         dateValue = entry.createdAt;
@@ -1128,7 +1095,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             
             for (Entry *entry in [result getResult]) {
                 [self checkLanguageStatus:entry];
-                [self checkEnvironment:entry];
                 if (entry.createdAt) {
                     if (i == 0) {
                         dateValue = entry.createdAt;
@@ -1168,7 +1134,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             [[result getResult] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 if ([obj isKindOfClass:[Entry class]]) {
                     [self checkLanguageStatus:obj];
-                    [self checkEnvironment:obj];
                     
                     XCTAssertTrue([obj objectForKey:@"title"], @"Undefined Key");
                 }
@@ -1199,7 +1164,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
                 if ([obj isKindOfClass:[Entry class]]) {
                     
                     [self checkLanguageStatus:obj];
-                    [self checkEnvironment:obj];
                     XCTAssertFalse([obj objectForKey:@"image"], @"Value exist for specified keys");
                 }
             }];
@@ -1269,7 +1233,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
                 
                 if ([obj isKindOfClass:[Entry class]]) {
                     [self checkLanguageStatus:obj];
-                    [self checkEnvironment:obj];
                     
                     [[obj.properties allKeys] enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL * _Nonnull stop) {
                         if ([fetchExceptFields containsObject:obj]) {
@@ -1307,7 +1270,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             [[result getResult] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 if ([obj isKindOfClass:[Entry class]]) {
                     [self checkLanguageStatus:obj];
-                    [self checkEnvironment:obj];
                     [[obj objectForKey:@"category"] enumerateObjectsUsingBlock:^(id  _Nonnull catObj, NSUInteger idx, BOOL * _Nonnull stop) {
                         
                         if ([catObj isKindOfClass:[Entry class]]) {
@@ -1346,7 +1308,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             [[result getResult] enumerateObjectsUsingBlock:^(Entry *entry, NSUInteger idx, BOOL * _Nonnull stop) {
                 
                 [self checkLanguageStatus:entry];
-                [self checkEnvironment:entry];
                 
                 if ([entry objectForKey:@"category"]) {
                     
@@ -1400,7 +1361,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             [[result getResult] enumerateObjectsUsingBlock:^(Entry *entry, NSUInteger idx, BOOL * _Nonnull stop) {
                 
                 [self checkLanguageStatus:entry];
-                [self checkEnvironment:entry];
                 
                 if ([entry objectForKey:@"category"]) {
                     
@@ -1451,7 +1411,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
                 __block BOOL stringExist = false;
                 
                 [self checkLanguageStatus:entry];
-                [self checkEnvironment:entry];
                 
                 [entry.properties enumerateKeysAndObjectsUsingBlock:^(NSString *key, id  _Nonnull obj, BOOL * _Nonnull stop) {
                     if ([obj isKindOfClass:[NSString class]]) {
@@ -1497,7 +1456,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             [[result getResult] enumerateObjectsUsingBlock:^(Entry *entry, NSUInteger idx, BOOL * _Nonnull stop) {
                 
                 [self checkLanguageStatus:entry];
-                [self checkEnvironment:entry];
                 XCTAssertTrue(([entry.title rangeOfString:regexString options:NSCaseInsensitiveSearch].location == NSNotFound), @"title sohuld satisfy given regex");
             }];
             
@@ -1531,7 +1489,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             
             [[result getResult] enumerateObjectsUsingBlock:^(Entry *entry, NSUInteger idx, BOOL * _Nonnull stop) {
                 [self checkLanguageStatus:entry];
-                [self checkEnvironment:entry];
                 XCTAssertTrue(([entry.title rangeOfString:regexString options:NSLiteralSearch].location == NSNotFound), @"title sohuld satisfy given regex");
                 
             }];
@@ -1560,7 +1517,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
         }else {
             
             [self checkLanguageStatus:entry];
-            [self checkEnvironment:entry];
             
             XCTAssertTrue(([entry valueForKey:@"in_stock"]), @"Values not available for specified key");
         }
@@ -1704,7 +1660,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             [[result getResult] enumerateObjectsUsingBlock:^(Entry *obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 
                 [self checkLanguageStatus:obj];
-                [self checkEnvironment:obj];
                 
                 __block BOOL hasTag = false;
                 [tags enumerateObjectsUsingBlock:^(NSString *tag, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -1753,7 +1708,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             [[result getResult] enumerateObjectsUsingBlock:^(Entry *obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 
                 [self checkLanguageStatus:obj];
-                [self checkEnvironment:obj];
                 
                 if(obj.language != ENGLISH_UNITED_STATES){
                     XCTFail(@"Object does not have ENGLISH_UNITED_STATES language.");
@@ -1898,7 +1852,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             for (Entry *entry in [result getResult]) {
                 
                 [self checkLanguageStatus:entry];
-                [self checkEnvironment:entry];
                 XCTAssertTrue(([[entry objectForKey:@"price"] integerValue] >= 99), @"condition not specified for query");
             }
         }
@@ -1929,7 +1882,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             for (Entry *entry in [result getResult]) {
                 
                 [self checkLanguageStatus:entry];
-                [self checkEnvironment:entry];
                 XCTAssertTrue(([result totalCount] == [result getResult].count), @"Query key is not removed.");
             }
         }
