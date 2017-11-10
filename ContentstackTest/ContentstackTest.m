@@ -1640,6 +1640,103 @@ static NSInteger kRequestTimeOutInSeconds = 400;
     [self waitForRequest];
 }
 
+- (void)testFetchWithContentType {
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Fetch Entries with Content type"];
+    
+    ContentType* csForm = [csStack contentTypeWithName:@"product"];
+    
+    Query* csQuery = [csForm query];
+    [csQuery includeContentType];
+    [csQuery find:^(ResponseType type, QueryResult *result, NSError *error) {
+        
+        if (error) {
+            XCTFail(@"~ ERR: %@", error.userInfo);
+        } else {
+            NSDictionary *contentTypeDictionary = [result content_type];
+            
+            if (contentTypeDictionary[@"schema"] != nil)
+            {
+                NSArray *objectsArray = (NSArray *)contentTypeDictionary[@"schema"];
+                [objectsArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    XCTAssertTrue(objectsArray, "Schema should be present");
+                }];
+            }
+        }
+        [expectation fulfill];
+    }];
+    
+    [self waitForRequest];
+}
+
+- (void)testFetchWithSchemaAndContentType {
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Fetch Entries with Schema & Content type"];
+    
+    ContentType* csForm = [csStack contentTypeWithName:@"product"];
+    
+    Query* csQuery = [csForm query];
+    [csQuery includeSchema];
+    [csQuery includeContentType];
+    [csQuery find:^(ResponseType type, QueryResult *result, NSError *error) {
+        
+        if (error) {
+            XCTFail(@"~ ERR: %@", error.userInfo);
+        } else {
+            NSDictionary *contentTypeDictionary = [result content_type];
+            
+            if (contentTypeDictionary[@"schema"] != nil)
+            {
+                NSArray *objectsArray = (NSArray *)contentTypeDictionary[@"schema"];
+                [objectsArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    XCTAssertTrue(objectsArray, "Schema should be present");
+                }];
+            }
+        }
+        
+        [expectation fulfill];
+        
+    }];
+    
+    [self waitForRequest];
+}
+
+
+- (void)testFetchWithContentTypeAndSchema {
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Fetch Entries with Content type & Schema"];
+    
+    ContentType* csForm = [csStack contentTypeWithName:@"product"];
+    
+    Query* csQuery = [csForm query];
+    [csQuery includeContentType];
+    [csQuery includeSchema];
+    [csQuery find:^(ResponseType type, QueryResult *result, NSError *error) {
+        
+        if (error) {
+            XCTFail(@"~ ERR: %@", error.userInfo);
+        } else {
+            NSDictionary *contentTypeDictionary = [result content_type];
+            
+            if (contentTypeDictionary[@"schema"] != nil)
+            {
+                NSArray *objectsArray = (NSArray *)contentTypeDictionary[@"schema"];
+                [objectsArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    XCTAssertTrue(objectsArray, "Schema should be present");
+                }];
+            }
+        }
+        
+        [expectation fulfill];
+        
+    }];
+    
+    [self waitForRequest];
+}
+
+
+
+
 - (void)testFetchTags {
     
     XCTestExpectation *expectation = [self expectationWithDescription:@"Fetch Tags"];
@@ -1891,6 +1988,37 @@ static NSInteger kRequestTimeOutInSeconds = 400;
     [self waitForRequest];
 }
 
+
+#pragma mark -
+#pragma mark Test Case - Image Transformation
+
+- (void)testImageTransformation {
+//    // This is an example of a Image Transformation test case.
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Image Optimisation"];
+//
+    __block NSString *uid = @"blt5312f71416d6e2c8";
+    Asset* assetObj = [csStack assetWithUID:uid];
+
+    [assetObj fetch:^(ResponseType type, NSError * _Nonnull error) {
+        if (error) {
+            XCTFail(@"~ ERR: %@, Message = %@", error.userInfo, error.description);
+        }else {
+            if ([assetObj.url length] > 0) {
+                NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInteger:100],@"width",[NSNumber numberWithInteger:100],@"height",@"disable",@"crop", nil];
+                NSString *transformUrl = [csStack imageTransformWithUrl:assetObj.url andParams:params];
+                if ([transformUrl containsString:@"width"])
+                    XCTAssert(YES, @"Pass");
+
+            } else {
+                XCTFail(@"wrong entry object");
+            }
+        }
+        [expectation fulfill];
+    }];
+    [self waitForRequest];
+    
+}
+
 #pragma mark -
 #pragma mark TestPerformanceExample
 
@@ -1900,5 +2028,7 @@ static NSInteger kRequestTimeOutInSeconds = 400;
         // Put the code you want to measure the time of here.
     }];
 }
+
+
 
 @end
