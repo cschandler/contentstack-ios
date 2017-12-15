@@ -51,7 +51,7 @@ static NSInteger kRequestTimeOutInSeconds = 400;
     [super setUp];
     // Put setup code here. This method is called before the invocation of each test method in the class.
     config = [[Config alloc] init];
-    // config.host = @"stagcontentstack.global.ssl.fastly.net";//@"dev-cdn.contentstack.io";
+    config.host = @"cdn.contentstack.io";//@"stagcontentstack.global.ssl.fastly.net";//@"dev-cdn.contentstack.io";
     csStack = [Contentstack stackWithAPIKey:@"blt12c8ad610ff4ddc2" accessToken:@"blt43359585f471685188b2e1ba" environmentName:@"env1" config:config];
     _productUid = @"blt04fe803db48a65a3";
 }
@@ -2018,6 +2018,85 @@ static NSInteger kRequestTimeOutInSeconds = 400;
     [self waitForRequest];
     
 }
+
+#pragma mark -
+#pragma mark Test Case - addParam
+
+- (void)testaddParamForAsset {
+    //    // This is an example of a Image Transformation test case.
+    XCTestExpectation *expectation = [self expectationWithDescription:@"addParam for Asset"];
+    //
+    __block NSString *uid = @"bltfd8b297b131d5f1f";
+    Asset* assetObj = [csStack assetWithUID:uid];
+    [assetObj addParamKey:@"include_dimension" andValue:@"true"];
+    [assetObj fetch:^(ResponseType type, NSError * _Nonnull error) {
+        if (error) {
+            XCTFail(@"~ ERR: %@, Message = %@", error.userInfo, error.description);
+        }else {
+            if ([assetObj.url length] > 0) {
+                if ( [assetObj.properties objectForKey:@"dimension"]){
+                    NSLog(@"%@",assetObj.properties);
+                    XCTAssert(YES, @"Pass");
+                }else{
+                    XCTFail(@"wrong asset object");
+                }
+            } else {
+                XCTFail(@"wrong asset object");
+            }
+        }
+        [expectation fulfill];
+    }];
+    [self waitForRequest];
+}
+
+- (void)testaddParamForQuery {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Fetch Greater than Entries"];
+    
+    ContentType* csForm = [csStack contentTypeWithName:@"product"];
+    Query* csQuery = [csForm query];
+    [csQuery addParamKey:@"limit" andValue:@"1"];
+    [csQuery find:^(ResponseType type, QueryResult *result, NSError *error) {
+        if (error) {
+            XCTFail(@"~ ERR: %@", error.userInfo);
+        }else {
+            [self testProductCount:[result getResult]];
+            if ([result getResult].count > 0) {
+                XCTAssert(YES, @"Pass");
+            } else {
+                XCTFail(@"wrong asset object");
+            }
+        }
+        [expectation fulfill];
+    }];
+    
+    [self waitForRequest];
+}
+
+//- (void)testaddParamForEntry {
+//
+//    XCTestExpectation *expectation = [self expectationWithDescription:@"Value For Key"];
+//
+//    ContentType* csForm = [csStack contentTypeWithName:@"product"];
+//
+//    Entry *entry = [csForm entryWithUID:_productUid];
+//    [entry addParamKey:@"environment" andValue:@"env1"];
+//    [entry fetch:^(ResponseType type, NSError *error) {
+//        if (error) {
+//            XCTFail(@"~ ERR: %@, Message = %@", error.userInfo, error.description);
+//        }else {
+//            NSDictionary *dicti = [entry valueForUndefinedKey:@"short_description"];
+//            if (dicti) {
+//                XCTAssert(YES, @"Pass");
+//            }
+//            else {
+//                XCTFail(@"~ ERR: %@, Message = %@", error.userInfo, error.description);
+//            }
+//        }
+//        [expectation fulfill];
+//    }];
+//
+//    [self waitForRequest];
+//}
 
 #pragma mark -
 #pragma mark TestPerformanceExample
