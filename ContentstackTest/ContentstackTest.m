@@ -3,11 +3,11 @@
 //  ContentstackTest
 //
 //  Created by Reefaq on 12/01/17.
-//  Copyright © 2017 Built.io. All rights reserved.
+//  Copyright © 2017 Contentstack. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
-#import <Contentstack/Contentstack.h>
+#import "Contentstack.h"
 
 
 static NSInteger kRequestTimeOutInSeconds = 400;
@@ -78,7 +78,6 @@ static NSInteger kRequestTimeOutInSeconds = 400;
     ContentType* csForm = [csStack contentTypeWithName:@"product"];
     Query* csQuery = [csForm query];
     [csQuery whereKey:@"in_stock" equalTo:@(YES)];
-    
     [csQuery findOne:^(ResponseType type, Entry * _Nullable entry, NSError * _Nullable error) {
         
         NSDictionary *headerDict = [csQuery getHeaderFields];
