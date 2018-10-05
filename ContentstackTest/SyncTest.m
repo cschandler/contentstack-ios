@@ -58,9 +58,19 @@ static NSInteger kRequestTimeOutInSeconds = 400;
     [self waitForRequest];
 }
 
+- (void)testSyncToken {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Sync"];
+    [csStack syncToken:@"blt5c2acb07cc97a34231bbb0" completion:^(SyncStack * _Nullable syncStack, NSError * _Nullable error) {
+        if (syncStack.syncToken != nil) {
+            [expectation fulfill];
+        }
+    }];
+    [self waitForRequest];
+}
+
 - (void)testSyncFromDate {
     XCTestExpectation *expectation = [self expectationWithDescription:@"SyncFromDate"];
-    NSDate *date = [NSDate date];
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:1534617000];
     
     [csStack syncFrom:date completion:^(SyncStack * _Nullable syncResult, NSError * _Nullable error) {
         for (NSDictionary *item in syncResult.items) {
@@ -70,7 +80,7 @@ static NSInteger kRequestTimeOutInSeconds = 400;
                 if ([data objectForKey:@"uid"] != nil && [[data objectForKey:@"uid"] isKindOfClass:[NSString class]]) {
                     Entry *entry = [contentType entryWithUID:[data objectForKey:@"uid"]];
                     [entry configureWithDictionary:data];
-                    XCTAssertLessThanOrEqual(date, entry.createdAt);
+                    XCTAssertLessThanOrEqual(date, entry.updatedAt);
                 }
             }
         }
@@ -89,7 +99,7 @@ static NSInteger kRequestTimeOutInSeconds = 400;
 
 - (void)testSyncOnlyClass {
     XCTestExpectation *expectation = [self expectationWithDescription:@"SyncOnlyClass"];
-    [csStack syncOnly:@"example_stack" completion:^(SyncStack * _Nullable syncResult, NSError * _Nullable error) {
+    [csStack syncOnly:@"session" completion:^(SyncStack * _Nullable syncResult, NSError * _Nullable error) {
         [expectation fulfill];
     }];
     [self waitForRequest];
@@ -97,7 +107,7 @@ static NSInteger kRequestTimeOutInSeconds = 400;
 
 -(void)testSyncOnlyWithLocale {
     XCTestExpectation *expectation = [self expectationWithDescription:@"SyncOnlyWithLocale"];
-    [csStack syncOnly:@"product" locale:ENGLISH_UNITED_STATES from:nil completion:^(SyncStack * _Nullable syncStack, NSError * _Nullable error) {
+    [csStack syncOnly:@"session" locale:ENGLISH_UNITED_STATES from:nil completion:^(SyncStack * _Nullable syncStack, NSError * _Nullable error) {
         [expectation fulfill];
         
     }];
@@ -105,8 +115,21 @@ static NSInteger kRequestTimeOutInSeconds = 400;
 }
 
 - (void)testSyncOnlyClassAndDate {
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:1534617000];
+
     XCTestExpectation *expectation = [self expectationWithDescription:@"SyncOnlyClassAndDate"];
-    [csStack syncOnly:@"product" from:[NSDate date] completion:^(SyncStack * _Nullable syncResult, NSError * _Nullable error) {
+    [csStack syncOnly:@"session" from:date completion:^(SyncStack * _Nullable syncResult, NSError * _Nullable error) {
+        for (NSDictionary *item in syncResult.items) {
+            if ([[item objectForKey:@"data"] isKindOfClass:[NSDictionary class]]) {
+                NSDictionary *data = [item objectForKey:@"data"];
+                ContentType *contentType = [csStack contentTypeWithName:[data objectForKey:@"content_type_uid"]];
+                if ([data objectForKey:@"uid"] != nil && [[data objectForKey:@"uid"] isKindOfClass:[NSString class]]) {
+                    Entry *entry = [contentType entryWithUID:[data objectForKey:@"uid"]];
+                    [entry configureWithDictionary:data];
+                    XCTAssertLessThanOrEqual(date, entry.updatedAt);
+                }
+            }
+        }
         [expectation fulfill];
     }];
     [self waitForRequest];
