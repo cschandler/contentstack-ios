@@ -52,7 +52,7 @@ static NSInteger kRequestTimeOutInSeconds = 400;
     // Put setup code here. This method is called before the invocation of each test method in the class.
     config = [[Config alloc] init];
     config.host = @"api.contentstack.io";//@"cdn.contentstack.io";//@"stagcontentstack.global.ssl.fastly.net";//@"dev-cdn.contentstack.io";
-    csStack = [Contentstack stackWithAPIKey:@"blt12c8ad610ff4ddc2" accessToken:@"blt43359585f471685188b2e1ba" environmentName:@"env1" config:config];
+    csStack = [Contentstack stackWithAPIKey:@"blt12c8ad610ff4ddc2" deliveryToken:@"blt43359585f471685188b2e1ba" environmentName:@"env1" config:config];
     _productUid = @"blt04fe803db48a65a3";
 }
 
@@ -82,7 +82,7 @@ static NSInteger kRequestTimeOutInSeconds = 400;
         
         NSDictionary *headerDict = [csQuery getHeaderFields];
         if (headerDict) {
-            XCTAssertTrue(([[headerDict objectForKey:@"authtoken"] isEqualToString:csStack.accessToken] && [[headerDict objectForKey:@"api_key"] isEqualToString:csStack.apiKey]), @"authtoken and api_key must be present");
+            XCTAssertTrue(([[headerDict objectForKey:@"authtoken"] isEqualToString:csStack.deliveryToken] && [[headerDict objectForKey:@"api_key"] isEqualToString:csStack.apiKey]), @"authtoken and api_key must be present");
         }else {
             XCTFail(@"headerDict should not be nil");
         }
