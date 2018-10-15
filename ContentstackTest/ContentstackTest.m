@@ -82,7 +82,7 @@ static NSInteger kRequestTimeOutInSeconds = 400;
         
         NSDictionary *headerDict = [csQuery getHeaderFields];
         if (headerDict) {
-            XCTAssertTrue(([[headerDict objectForKey:@"authtoken"] isEqualToString:csStack.accessToken] && [[headerDict objectForKey:@"api_key"] isEqualToString:csStack.apiKey]), @"authtoken and api_key must be present");
+            XCTAssertTrue(([[headerDict objectForKey:@"access_token"] isEqualToString:csStack.accessToken] && [[headerDict objectForKey:@"api_key"] isEqualToString:csStack.apiKey]), @"authtoken and api_key must be present");
         }else {
             XCTFail(@"headerDict should not be nil");
         }
