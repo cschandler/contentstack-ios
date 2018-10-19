@@ -16,6 +16,8 @@ static NSInteger kRequestTimeOutInSeconds = 400;
     Stack *csStack;
     Config *config;
     CGFloat count;
+    NSString *syncToken;
+    NSDateFormatter *formatter;
 }
 @end
 
@@ -24,15 +26,26 @@ static NSInteger kRequestTimeOutInSeconds = 400;
 - (void)setUp {
     [super setUp];
     // Put setup code here. This method is called before the invocation of each test method in the class.
-//    config = [[Config alloc] init];
-//    config.host = /*@"cdn.contentstack.io";//@"stagcontentstack.global.ssl.fastly.net";//*/@"dev-cdn.contentstack.io";
-//    csStack = [Contentstack stackWithAPIKey:@"blt12c8ad610ff4ddc2" accessToken:@"blt43359585f471685188b2e1ba" environmentName:@"env1" config:config];
-    Config *_config = [[Config alloc] init];
-    _config.host = @"dev-cdn.contentstack.io";//@"stagcontentstack.global.ssl.fastly.net";//@"dev-cdn.contentstack.io";
-    
-    csStack = [Contentstack stackWithAPIKey:@"blt3095c4e04a3d69e6" accessToken:@"csb4aacc6e090dfd2e8c1b01cd" environmentName:@"web" config:_config];
+    // Prod
+//    Config *_config = [[Config alloc] init];
+//    _config.host = @"cdn.contentstack.io";
+//    syncToken = @"blt37f6aa8e41cbb327c6c6d3";//Prod
+//    csStack = [Contentstack stackWithAPIKey:@"blt477ba55f9a67bcdf" accessToken:@"cs7731f03a2feef7713546fde5" environmentName:@"web" config:_config];
 
-//    _productUid = @"blt04fe803db48a65a3";
+    //Stag
+    Config *_config = [[Config alloc] init];
+    _config.host = @"stag-cdn.contentstack.io";
+    syncToken = @"bltd839b884dd314465ddecd0";//stage
+    csStack = [Contentstack stackWithAPIKey:@"blt74a50c2ca360f373" accessToken:@"cs277916ede0367f794aaa48c6" environmentName:@"web" config:_config];
+
+    //Dev
+//    Config *_config = [[Config alloc] init];
+//    _config.host = @"dev-cdn.contentstack.io";
+//    syncToken = @"blt37f6aa8e41cbb327c6c6d3";//Dev
+//    csStack = [Contentstack stackWithAPIKey:@"blt3095c4e04a3d69e6" accessToken:@"csb4aacc6e090dfd2e8c1b01cd" environmentName:@"web" config:_config];
+
+    formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:SSSSSZ";
 }
 
 - (void)waitForRequest {
@@ -66,7 +79,7 @@ static NSInteger kRequestTimeOutInSeconds = 400;
     count = 0;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Sync"];
-    [csStack syncToken:@"blt5c2acb07cc97a34231bbb0" completion:^(SyncStack * _Nullable syncStack, NSError * _Nullable error) {
+    [csStack syncToken:syncToken completion:^(SyncStack * _Nullable syncStack, NSError * _Nullable error) {
         count += syncStack.items.count;
         if (syncStack.syncToken != nil) {
             XCTAssertEqual(syncStack.totalCount, count);
@@ -82,19 +95,16 @@ static NSInteger kRequestTimeOutInSeconds = 400;
     
     [csStack syncFrom:date completion:^(SyncStack * _Nullable syncStack, NSError * _Nullable error) {
         for (NSDictionary *item in syncStack.items) {
-            if ([[item objectForKey:@"data"] isKindOfClass:[NSDictionary class]]) {
-                NSDictionary *data = [item objectForKey:@"data"];
-                ContentType *contentType = [csStack contentTypeWithName:[data objectForKey:@"content_type_uid"]];
-                if ([data objectForKey:@"uid"] != nil && [[data objectForKey:@"uid"] isKindOfClass:[NSString class]]) {
-                    Entry *entry = [contentType entryWithUID:[data objectForKey:@"uid"]];
-                    [entry configureWithDictionary:data];
-                    XCTAssertLessThanOrEqual(date, entry.updatedAt);
-                }
+            if ([[item objectForKey:@"event_at"] isKindOfClass:[NSString class]]) {
+                NSDate *daatee = [formatter dateFromString:[[item objectForKey:@"event_at"] stringByReplacingOccurrencesOfString:@"." withString:@""]];
+                XCTAssertLessThanOrEqual(date.timeIntervalSince1970, daatee.timeIntervalSince1970);
             }
         }
         if (syncStack.syncToken != nil) {
             [expectation fulfill];
-        }    }];
+        }
+            
+        }];
     [self waitForRequest];
 }
 
@@ -158,14 +168,9 @@ static NSInteger kRequestTimeOutInSeconds = 400;
             if ([[item objectForKey:@"content_type_uid"] isKindOfClass:[NSString class]]) {
                 XCTAssertTrue([[item objectForKey:@"content_type_uid"] isEqualToString:@"session"]);
             }
-            if ([[item objectForKey:@"data"] isKindOfClass:[NSDictionary class]]) {
-                NSDictionary *data = [item objectForKey:@"data"];
-                ContentType *contentType = [csStack contentTypeWithName:[data objectForKey:@"content_type_uid"]];
-                if ([data objectForKey:@"uid"] != nil && [[data objectForKey:@"uid"] isKindOfClass:[NSString class]]) {
-                    Entry *entry = [contentType entryWithUID:[data objectForKey:@"uid"]];
-                    [entry configureWithDictionary:data];
-                    XCTAssertLessThanOrEqual(date, entry.updatedAt);
-                }
+            if ([[item objectForKey:@"event_at"] isKindOfClass:[NSString class]]) {
+                NSDate *daatee = [formatter dateFromString:[[item objectForKey:@"event_at"] stringByReplacingOccurrencesOfString:@"." withString:@""]];
+                XCTAssertLessThanOrEqual(date.timeIntervalSince1970, daatee.timeIntervalSince1970);
             }
         }
         if (syncStack.syncToken != nil) {
@@ -199,17 +204,14 @@ static NSInteger kRequestTimeOutInSeconds = 400;
     XCTestExpectation *expectation = [self expectationWithDescription:@"SyncLocaleWithDate"];
     [csStack syncLocale:ENGLISH_UNITED_STATES from:date completion:^(SyncStack * _Nullable syncStack, NSError * _Nullable error) {
         for (NSDictionary *item in syncStack.items) {
+            if ([[item objectForKey:@"event_at"] isKindOfClass:[NSString class]]) {
+                NSDate *daatee = [formatter dateFromString:[[item objectForKey:@"event_at"] stringByReplacingOccurrencesOfString:@"." withString:@""]];
+                XCTAssertLessThanOrEqual(date.timeIntervalSince1970, daatee.timeIntervalSince1970);
+            }
             if ([[item objectForKey:@"data"] isKindOfClass:[NSDictionary class]]) {
                 NSDictionary *data = [item objectForKey:@"data"];
                 if ([data objectForKey:@"publish_details.locale"] != nil && [[data objectForKey:@"publish_details.locale"] isKindOfClass:[NSString class]]) {
                     XCTAssertTrue([[data objectForKey:@"publish_details.locale"] isEqualToString:@"en-us" ]);
-                }
-
-                ContentType *contentType = [csStack contentTypeWithName:[data objectForKey:@"content_type_uid"]];
-                if ([data objectForKey:@"uid"] != nil && [[data objectForKey:@"uid"] isKindOfClass:[NSString class]]) {
-                    Entry *entry = [contentType entryWithUID:[data objectForKey:@"uid"]];
-                    [entry configureWithDictionary:data];
-                    XCTAssertLessThanOrEqual(date, entry.updatedAt);
                 }
             }
         }
