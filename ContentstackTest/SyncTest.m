@@ -27,16 +27,16 @@ static NSInteger kRequestTimeOutInSeconds = 400;
     [super setUp];
     // Put setup code here. This method is called before the invocation of each test method in the class.
     // Prod
-//    Config *_config = [[Config alloc] init];
-//    _config.host = @"cdn.contentstack.io";
-//    syncToken = @"blt37f6aa8e41cbb327c6c6d3";//Prod
-//    csStack = [Contentstack stackWithAPIKey:@"blt477ba55f9a67bcdf" accessToken:@"cs7731f03a2feef7713546fde5" environmentName:@"web" config:_config];
+    Config *_config = [[Config alloc] init];
+    _config.host = @"cdn.contentstack.io";
+    syncToken = @"bltbb61f31a70a572e6c9506a";//Prod
+    csStack = [Contentstack stackWithAPIKey:@"blt477ba55f9a67bcdf" accessToken:@"cs7731f03a2feef7713546fde5" environmentName:@"web" config:_config];
 
     //Stag
-    Config *_config = [[Config alloc] init];
-    _config.host = @"stag-cdn.contentstack.io";
-    syncToken = @"bltd839b884dd314465ddecd0";//stage
-    csStack = [Contentstack stackWithAPIKey:@"blt74a50c2ca360f373" accessToken:@"cs277916ede0367f794aaa48c6" environmentName:@"web" config:_config];
+//    Config *_config = [[Config alloc] init];
+//    _config.host = @"stag-cdn.contentstack.io";
+//    syncToken = @"bltd839b884dd314465ddecd0";//stage
+//    csStack = [Contentstack stackWithAPIKey:@"blt74a50c2ca360f373" accessToken:@"cs277916ede0367f794aaa48c6" environmentName:@"web" config:_config];
 
     //Dev
 //    Config *_config = [[Config alloc] init];
