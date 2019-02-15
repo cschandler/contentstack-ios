@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "Contentstack.h"
+#import <Contentstack/Contentstack.h>
 
 
 static NSInteger kRequestTimeOutInSeconds = 400;
@@ -51,7 +51,7 @@ static NSInteger kRequestTimeOutInSeconds = 400;
     [super setUp];
     // Put setup code here. This method is called before the invocation of each test method in the class.
     config = [[Config alloc] init];
-    config.host = @"stag-new-api.contentstack.io";//@"cdn.contentstack.io";//@"stagcontentstack.global.ssl.fastly.net";//@"dev-cdn.contentstack.io";
+    config.host = @"stag-cdn.contentstack.io";//@"cdn.contentstack.io";//@"stagcontentstack.global.ssl.fastly.net";//@"dev-cdn.contentstack.io";
     csStack = [Contentstack stackWithAPIKey:@"blt12c8ad610ff4ddc2" accessToken:@"blt43359585f471685188b2e1ba" environmentName:@"env1" config:config];
     _productUid = @"blt04fe803db48a65a3";
 }
@@ -74,7 +74,7 @@ static NSInteger kRequestTimeOutInSeconds = 400;
 
 - (void)testGetHeader {
     XCTestExpectation *expectation = [self expectationWithDescription:@"Fetch Set Header"];
-    
+    C
     ContentType* csForm = [csStack contentTypeWithName:@"product"];
     Query* csQuery = [csForm query];
     [csQuery whereKey:@"in_stock" equalTo:@(YES)];
