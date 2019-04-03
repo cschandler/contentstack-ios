@@ -16,7 +16,9 @@ s.social_media_url = 'https://twitter.com/Contentstack'
 
 s.ios.deployment_target = '8.0'
 
-s.source_files = 'ThirdPartyExtension/AFNetworking/*.{h,m}','ThirdPartyExtension/ISO8601DateFormatter/*.{h,m}','ThirdPartyExtension/MMarkDown/*.{h,m}', 'Contentstack/*.{h,m}', 'Contentstack/ThirdPartyNamespaceHeader/*.h', 'ContentstackInternal/*.{h,m}'
+s.dependency 'AFNetworking', '~> 3.1'
+
+s.source_files = 'ThirdPartyExtension/ISO8601DateFormatter/*.{h,m}','ThirdPartyExtension/MMarkDown/*.{h,m}', 'Contentstack/*.{h,m}', 'Contentstack/ThirdPartyNamespaceHeader/*.h', 'ContentstackInternal/*.{h,m}'
 s.public_header_files = 'Contentstack/*.h','Contentstack/ThirdPartyNamespaceHeader/*.h'
 
 s.frameworks =  'CoreGraphics', 'MobileCoreServices', 'Security', 'SystemConfiguration'
